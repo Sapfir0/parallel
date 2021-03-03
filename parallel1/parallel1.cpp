@@ -8,19 +8,32 @@
 
 using namespace std;
 
-bool exists(map<int, int> dict, int elem) {
+template <typename T>
+bool exists(map<T, int> dict, T elem) {
     return dict.find(elem) != dict.end();
 }
 
-map<int, int> uniqueCounter(vector<int> list) {
-    map<int, int> uniqueMap = {};
-    for (int item : list) {
+template <typename T>
+vector<T> getOnlyUniqueElements(map<T, int> dict) {
+    vector<T> uniqueElements;
+    for (auto item : dict) {
+        if (item.second == 1) {
+            uniqueElements.push_back(item.first);
+        }
+    }
+    return uniqueElements;
+}
+
+template <typename T>
+map<T, int> uniqueCounter(vector<T> list) {
+    map<T, int> uniqueMap = {};
+    for (T item : list) {
         if (exists(uniqueMap, item)) {
             int counter = uniqueMap.at(item) + 1;
             uniqueMap[item] = counter;
         }
         else {
-            uniqueMap.insert(pair<int, int>(item, 1));
+            uniqueMap.insert(pair<T, int>(item, 1));
         }
 
     }
@@ -30,10 +43,19 @@ map<int, int> uniqueCounter(vector<int> list) {
 int main() {
     vector<int> list = {1, -1, 1, 0, 9, 12, 3, -3, 0, 12, -12};
 
-    auto res = uniqueCounter(list);
+    auto res = getOnlyUniqueElements(uniqueCounter(list));
     for (auto elem : res)
     {
-        std::cout << elem.first << " " << elem.second << "\n";
+        std::cout << elem << endl;
+    }
+
+
+    vector<string> list2 = { "a", "b", "a", "c", "d", "e", "c" };
+
+    auto res2 = getOnlyUniqueElements(uniqueCounter(list2));
+    for (auto elem : res2)
+    {
+        std::cout << elem << endl;
     }
 
     return 0;
