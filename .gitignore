@@ -3,6 +3,8 @@
 
 Debug
 .vs
+.vscode
+*.vcxproj*
 
 # Compiled Object files
 *.slo

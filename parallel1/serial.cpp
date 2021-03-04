@@ -1,10 +1,11 @@
-﻿// parallel1.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
-//
-
-#include <iostream>
+﻿#include <iostream>
 #include <vector>
 #include <numeric>
 #include <map>
+#include <random>
+#include <algorithm>
+#include <iterator>
+#include <chrono> 
 
 using namespace std;
 
@@ -40,8 +41,31 @@ map<T, int> uniqueCounter(vector<T> list) {
     return uniqueMap;
 }
 
+vector<int> randomVector(size_t size)
+{
+    vector<int> v(size);
+    random_device rd;
+    std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
+    std::uniform_int_distribution<int> uni(0, size); // guaranteed unbiased
+    generate(v.begin(), v.end(), [&] {return uni(rng); });
+    return v;
+}
+
 int main() {
-    vector<int> list = {1, -1, 1, 0, 9, 12, 3, -3, 0, 12, -12};
+    int N = 1000;
+    vector<int> list0(randomVector(N));
+
+    auto start = chrono::high_resolution_clock::now();
+
+    auto res0 = getOnlyUniqueElements(uniqueCounter(list0));
+
+    auto stop = chrono::high_resolution_clock::now();
+    auto duration = chrono::duration_cast<chrono::milliseconds>(stop - start);
+ 
+    cout << "serial " << duration.count() << " ms" << endl;
+
+    /*
+   vector<int> list = {1, -1, 1, 0, 9, 12, 3, -3, 0, 12, -12};
 
     auto res = getOnlyUniqueElements(uniqueCounter(list));
     for (auto elem : res)
@@ -57,6 +81,7 @@ int main() {
     {
         std::cout << elem << endl;
     }
-
+    
+    */
     return 0;
 }
