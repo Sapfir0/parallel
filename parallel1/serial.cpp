@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <iterator>
 #include <chrono> 
+#include <mutex>
+#include "timeHelper.cpp"
 
 using namespace std;
 
@@ -26,19 +28,37 @@ vector<T> getOnlyUniqueElements(map<T, int> dict) {
 }
 
 template <typename T>
-map<T, int> uniqueCounter(vector<T> list) {
+vector<T> uniqueCounter(vector<T> list) {
     map<T, int> uniqueMap = {};
     for (T item : list) {
         if (exists(uniqueMap, item)) {
-            int counter = uniqueMap.at(item) + 1;
-            uniqueMap[item] = counter;
+            uniqueMap[item] += 1;
         }
         else {
             uniqueMap.insert(pair<T, int>(item, 1));
         }
 
     }
-    return uniqueMap;
+    return getOnlyUniqueElements(uniqueMap);
+}
+
+template <typename T>
+vector<T> uniqueCounterMutex(vector<T> list) {
+    map<T, int> uniqueMap = {};
+    std::mutex mutex;
+     
+    for (T item : list) {
+        if (exists(uniqueMap, item)) {
+            mutex.lock();
+            uniqueMap[item] += 1;
+            mutex.unlock();
+        }
+        else {
+            uniqueMap.insert(pair<T, int>(item, 1));
+        }
+
+    }
+    return getOnlyUniqueElements(uniqueMap);
 }
 
 vector<int> randomVector(size_t size)
@@ -51,18 +71,18 @@ vector<int> randomVector(size_t size)
     return v;
 }
 
+
+
 int main() {
-    int N = 1000;
+    int N = 10000;
     vector<int> list0(randomVector(N));
+    
+    cout << "serial ";
+    auto serial = measureTime(uniqueCounter<int>)(list0);
 
-    auto start = chrono::high_resolution_clock::now();
+    cout << "parallel ";
+    auto parallel = measureTime( uniqueCounterMutex<int>)(list0);
 
-    auto res0 = getOnlyUniqueElements(uniqueCounter(list0));
-
-    auto stop = chrono::high_resolution_clock::now();
-    auto duration = chrono::duration_cast<chrono::milliseconds>(stop - start);
- 
-    cout << "serial " << duration.count() << " ms" << endl;
 
     /*
    vector<int> list = {1, -1, 1, 0, 9, 12, 3, -3, 0, 12, -12};
