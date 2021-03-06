@@ -69,12 +69,11 @@ vector<T> uniqueCounter(vector<T> list) {
 }
 
 
-
-
 template <typename T>
-vector<T> uniqueCounterMutex(vector<T> list, int threadsCount) {
+int uniqueCounterMutex(vector<T> list, int threadsCount) {
     map<T, int> uniqueMap = {};
     std::mutex myMutex;
+    vector<T> uniqueElements;
 
     auto vectors = splitVector(list, threadsCount);
 
@@ -85,11 +84,49 @@ vector<T> uniqueCounterMutex(vector<T> list, int threadsCount) {
         }
     });
 
+    int counter = 0;
+    for (auto item : uniqueMap) {
+        if (item.second == 1) {
+            counter++;
+        }
+    }
 
-    return getOnlyUniqueElements(uniqueMap);
+    return counter;
 }
 
+template <typename T>
+int uniqueCounterAtomic(vector<T> list, int threadsCount) {
+    auto vectors = splitVector(list, threadsCount);
+    map<T, int> uniqueMap = {};
+    int uniqueElements;
+    atomic<int> counter = 0;
 
+    parallelExec(threadsCount, [&](size_t block) {
+        for (T item : vectors[block]) {
+            uniqueMap[item] += 1;
+        }
+
+    });
+
+    for (auto item : uniqueMap) {
+        if (item.second == 1) {
+            counter++;
+        }
+    }
+
+    return counter;
+
+}
+
+void testIsEqualList(vector<int> list1, vector<int> list2) {
+    auto res = isEqual(list1, list2) ? "Equal" : "Not equal";
+    std::cout << res << endl;
+}
+
+void testIsEqualLength(int l1, int l2) {
+    auto res = l1 == l2 ? "Equal len" : "Not equal len: " + to_string(l1) + " " + to_string(l2);
+    std::cout << res << endl;
+}
 
 int main() {
     int N = 1000000;
@@ -101,11 +138,11 @@ int main() {
 
     cout << "parallelMutex ";
     auto parallel = measureTime(uniqueCounterMutex<int>)(list0, threadsCount);
-    string res = isEqual(serial, parallel) ? "Equal" : "Not equal";
+    testIsEqualLength(serial.size(), parallel);
 
-    std::cout << res << endl;
-
-    cout << serial.size() << " " << parallel.size();
+    cout << "atomic ";
+    auto atom = measureTime(uniqueCounterAtomic<int>)(list0, threadsCount);
+    testIsEqualLength(serial.size(), atom);
 
     /*
    vector<int> list = {1, -1, 1, 0, 9, 12, 3, -3, 0, 12, -12};
