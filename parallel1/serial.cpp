@@ -9,9 +9,13 @@
 #include <mutex>
 #include "timeHelper.cpp"
 #include "helper.cpp"
+#include <unordered_map>
 
 using namespace std;
 
+bool findIn(vector<int> collection, int item) {
+    return find(collection.begin(), collection.end(), item) != collection.end();
+}
 
 bool isEqual(vector<int> list1, vector<int> list2) {
     if (list1.size() != list2.size())
@@ -49,7 +53,7 @@ void parallelExec(size_t threadCount, Function f) {
 }
 
 template <typename T>
-vector<T> getOnlyUniqueElements(map<T, int> dict) {
+vector<T> getOnlyUniqueElements(unordered_map<T, int> dict) {
     vector<T> uniqueElements;
     for (auto item : dict) {
         if (item.second == 1) {
@@ -61,7 +65,7 @@ vector<T> getOnlyUniqueElements(map<T, int> dict) {
 
 template <typename T>
 vector<T> uniqueCounter(vector<T> list) {
-    map<T, int> uniqueMap = {};
+    unordered_map<T, int> uniqueMap = {};
     for (T item : list) {
         uniqueMap[item] += 1;
     }
@@ -71,7 +75,7 @@ vector<T> uniqueCounter(vector<T> list) {
 
 template <typename T>
 int uniqueCounterMutex(vector<T> list, int threadsCount) {
-    map<T, int> uniqueMap = {};
+    vector<unordered_map<T, int>> uniqueMaps(threadsCount);
     std::mutex myMutex;
     vector<T> uniqueElements;
 
@@ -80,39 +84,63 @@ int uniqueCounterMutex(vector<T> list, int threadsCount) {
     parallelExec(threadsCount, [&](size_t block) {
         for (T item : vectors[block]) {
             std::lock_guard<std::mutex> guard(myMutex);
-            uniqueMap[item] += 1;
+            uniqueMaps[block][item] += 1;
         }
     });
 
     int counter = 0;
-    for (auto item : uniqueMap) {
-        if (item.second == 1) {
-            counter++;
+
+    for (int i = 0; i < uniqueMaps.size(); i++) {
+        for (auto item : uniqueMaps[i]) {
+            if (item.second == 1) {
+                bool isUniqueElement = true;
+                for (int j = 0; j < uniqueMaps.size(); j++) {
+                    if (j != i && uniqueMaps[j].find(item.first) != uniqueMaps[j].end()) { //нашли хотя бы в других мапах
+                        isUniqueElement = false;
+                    }
+                }
+                if (isUniqueElement) {
+                    counter++;
+                }
+            }
+
         }
     }
 
     return counter;
 }
 
+
+
 template <typename T>
 int uniqueCounterAtomic(vector<T> list, int threadsCount) {
-    auto vectors = splitVector(list, threadsCount);
-    map<T, int> uniqueMap = {};
-    int uniqueElements;
+    vector<unordered_map<T, int>> uniqueMaps(threadsCount);
     atomic<int> counter = 0;
+    auto vectors = splitVector(list, threadsCount);
 
     parallelExec(threadsCount, [&](size_t block) {
         for (T item : vectors[block]) {
-            uniqueMap[item] += 1;
+            uniqueMaps[block][item] += 1;
         }
-
     });
 
-    for (auto item : uniqueMap) {
-        if (item.second == 1) {
-            counter++;
+    for (int i = 0; i < uniqueMaps.size(); i++) {
+        for (auto item : uniqueMaps[i]) {
+            if (item.second == 1) {
+                bool isUniqueElement = true;
+                for (int j = 0; j < uniqueMaps.size(); j++) {
+                    if (j != i && uniqueMaps[j].find(item.first) != uniqueMaps[j].end()) { //нашли хотя бы в других мапах
+                        isUniqueElement = false;
+                    }
+                }
+                if (isUniqueElement) {
+                    counter++;
+                }
+            }
+
         }
     }
+
 
     return counter;
 
@@ -129,7 +157,7 @@ void testIsEqualLength(int l1, int l2) {
 }
 
 int main() {
-    int N = 1000000;
+    int N = 100000;
     int threadsCount = 3;
     vector<int> list0(randomVector(N));
     
