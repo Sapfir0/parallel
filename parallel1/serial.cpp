@@ -129,7 +129,7 @@ int uniqueCounterAtomic(vector<T> list, int threadsCount) {
             if (item.second == 1) {
                 bool isUniqueElement = true;
                 for (int j = 0; j < uniqueMaps.size(); j++) {
-                    if (j != i && uniqueMaps[j].find(item.first) != uniqueMaps[j].end()) { //нашли хотя бы в других мапах
+                    if (j != i && uniqueMaps[j].find(item.first) != uniqueMaps[j].end()) { //нашли в других мапах
                         isUniqueElement = false;
                     }
                 }
@@ -140,7 +140,6 @@ int uniqueCounterAtomic(vector<T> list, int threadsCount) {
 
         }
     }
-
 
     return counter;
 
