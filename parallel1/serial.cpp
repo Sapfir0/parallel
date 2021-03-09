@@ -1,4 +1,4 @@
-﻿#include <iostream>
+п»ї#include <iostream>
 #include <vector>
 #include <numeric>
 #include <map>
@@ -8,8 +8,8 @@
 #include <chrono> 
 #include <mutex>
 #include "timeHelper.cpp"
-#include "helper.cpp"
 #include <unordered_map>
+#include <string>
 
 using namespace std;
 
@@ -18,14 +18,7 @@ bool findIn(vector<int> collection, int item) {
 }
 
 bool isEqual(vector<int> list1, vector<int> list2) {
-    if (list1.size() != list2.size())
-        return false;
-
-    for (int i = 0; i < list1.size(); i++)
-        if (list1[i] != list2[i])
-            return false;
-
-    return true;
+    return list1 == list2;
 }
 
 vector<int> randomVector(size_t size)
@@ -86,7 +79,7 @@ int uniqueCounterMutex(vector<T> list, int threadsCount) {
             std::lock_guard<std::mutex> guard(myMutex);
             uniqueMaps[block][item] += 1;
         }
-    });
+        });
 
     int counter = 0;
 
@@ -95,7 +88,7 @@ int uniqueCounterMutex(vector<T> list, int threadsCount) {
             if (item.second == 1) {
                 bool isUniqueElement = true;
                 for (int j = 0; j < uniqueMaps.size(); j++) {
-                    if (j != i && uniqueMaps[j].find(item.first) != uniqueMaps[j].end()) { //нашли хотя бы в других мапах
+                    if (j != i && uniqueMaps[j].find(item.first) != uniqueMaps[j].end()) { //РЅР°С€Р»Рё С…РѕС‚СЏ Р±С‹ РІ РґСЂСѓРіРёС… РјР°РїР°С…
                         isUniqueElement = false;
                     }
                 }
@@ -122,14 +115,14 @@ int uniqueCounterAtomic(vector<T> list, int threadsCount) {
         for (T item : vectors[block]) {
             uniqueMaps[block][item] += 1;
         }
-    });
+        });
 
     for (int i = 0; i < uniqueMaps.size(); i++) {
         for (auto item : uniqueMaps[i]) {
             if (item.second == 1) {
                 bool isUniqueElement = true;
                 for (int j = 0; j < uniqueMaps.size(); j++) {
-                    if (j != i && uniqueMaps[j].find(item.first) != uniqueMaps[j].end()) { //нашли в других мапах
+                    if (j != i && uniqueMaps[j].find(item.first) != uniqueMaps[j].end()) { //РЅР°С€Р»Рё РІ РґСЂСѓРіРёС… РјР°РїР°С…
                         isUniqueElement = false;
                     }
                 }
@@ -151,44 +144,58 @@ void testIsEqualList(vector<int> list1, vector<int> list2) {
 }
 
 void testIsEqualLength(int l1, int l2) {
-    auto res = l1 == l2 ? "Equal len" : "Not equal len: " + to_string(l1) + " " + to_string(l2);
-    std::cout << res << endl;
+    if (l1 == l2) {
+        
+    }
+    else {
+       cout << "Not equal len: " + to_string(l1) + " " + to_string(l2);
+    }
 }
 
 int main() {
-    int N = 100000;
-    int threadsCount = 3;
+    int N = 10000000;
+    const int maxThreadsCount = 6;
     vector<int> list0(randomVector(N));
-    
+
     cout << "serial ";
     auto serial = measureTime(uniqueCounter<int>)(list0);
 
-    cout << "parallelMutex ";
-    auto parallel = measureTime(uniqueCounterMutex<int>)(list0, threadsCount);
-    testIsEqualLength(serial.size(), parallel);
+    for (int threadsCount = 1; threadsCount < maxThreadsCount; threadsCount++) {
+        cout << "parallelMutex" << threadsCount << " ";
+        auto parallel = measureTime(uniqueCounterMutex<int>)(list0, threadsCount);
+        testIsEqualLength(serial.size(), parallel);
 
-    cout << "atomic ";
-    auto atom = measureTime(uniqueCounterAtomic<int>)(list0, threadsCount);
-    testIsEqualLength(serial.size(), atom);
+        cout << "atomic" << threadsCount << " ";
+        auto atom = measureTime(uniqueCounterAtomic<int>)(list0, threadsCount);
+        testIsEqualLength(serial.size(), atom);
+    }
+
 
     /*
+    * serial 10.062 seconds
+parallelMutex1 8.59098 seconds
+atomic1 7.50061 seconds
+parallelMutex2 9.21549 seconds
+atomic2 7.46169 seconds
+parallelMutex3 10.7417 seconds
+atomic3 8.00863 seconds
+parallelMutex4 12.7107 seconds
+atomic4 9.49391 seconds
+parallelMutex5 12.9359 seconds
+atomic5 9.90633 seconds
    vector<int> list = {1, -1, 1, 0, 9, 12, 3, -3, 0, 12, -12};
-
     auto res = getOnlyUniqueElements(uniqueCounter(list));
     for (auto elem : res)
     {
         std::cout << elem << endl;
     }
-
-
     vector<string> list2 = { "a", "b", "a", "c", "d", "e", "c" };
-
     auto res2 = getOnlyUniqueElements(uniqueCounter(list2));
     for (auto elem : res2)
     {
         std::cout << elem << endl;
     }
-    
+
     */
     return 0;
 }
