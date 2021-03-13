@@ -27,15 +27,15 @@ int main() {
     for (int threadsCount = 2; threadsCount < maxThreadsCount; threadsCount++) {
         cout << "parallelMutex" << threadsCount << " ";
         auto parallel = measureTime(uniqueCounterMutex<int>)(list0, threadsCount);
-        testIsEqualLength(serial.size(), parallel);
+        testIsEqualLength(serial, parallel);
 
         cout << "shared variables" << threadsCount << " ";
         auto shared = measureTime(uniqueCounterSharedVariables<int>)(list0, threadsCount);
-        testIsEqualLength(serial.size(), shared);
+        testIsEqualLength(serial, shared);
 
         cout << "atomic" << threadsCount << " ";
         auto atom = measureTime(uniqueCounterAtomic<int>)(list0, threadsCount);
-        testIsEqualLength(serial.size(), atom);
+        testIsEqualLength(serial, atom);
     }
 
 

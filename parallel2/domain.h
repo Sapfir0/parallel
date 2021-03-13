@@ -8,18 +8,18 @@
 using namespace std;
 
 template <typename T>
-vector<T> getOnlyUniqueElements(unordered_map<T, int> dict) {
-    vector<T> uniqueElements;
+int getOnlyUniqueElements(unordered_map<T, int> dict) {
+    int counter = 0;
     for (auto item : dict) {
         if (item.second == 1) {
-            uniqueElements.push_back(item.first);
+            counter ++;
         }
     }
-    return uniqueElements;
+    return counter;
 }
 
 template <typename T>
-vector<T> uniqueCounter(vector<T> list) {
+int uniqueCounter(vector<T> list) {
     unordered_map<T, int> uniqueMap = {};
     for (T item : list) {
         uniqueMap[item] += 1;
