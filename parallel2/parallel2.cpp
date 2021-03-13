@@ -17,17 +17,21 @@ using namespace std;
 
 
 int main() {
-    int N = 10000000;
+    int N = 1000000;
     const int maxThreadsCount = 6;
     vector<int> list0(randomVector(N));
 
     cout << "serial ";
     auto serial = measureTime(uniqueCounter<int>)(list0);
 
-    for (int threadsCount = 1; threadsCount < maxThreadsCount; threadsCount++) {
+    for (int threadsCount = 2; threadsCount < maxThreadsCount; threadsCount++) {
         cout << "parallelMutex" << threadsCount << " ";
         auto parallel = measureTime(uniqueCounterMutex<int>)(list0, threadsCount);
         testIsEqualLength(serial.size(), parallel);
+
+        cout << "shared variables" << threadsCount << " ";
+        auto shared = measureTime(uniqueCounterSharedVariables<int>)(list0, threadsCount);
+        testIsEqualLength(serial.size(), shared);
 
         cout << "atomic" << threadsCount << " ";
         auto atom = measureTime(uniqueCounterAtomic<int>)(list0, threadsCount);

@@ -26,7 +26,7 @@ void testIsEqualList(vector<int> list1, vector<int> list2) {
 
 void testIsEqualLength(int l1, int l2) {
     if (l1 != l2) {
-        cout << "Not equal len: " + to_string(l1) + " " + to_string(l2);
+        cout << "Not equal len: " + to_string(l1) + " " + to_string(l2) << endl;
     }
 }
 

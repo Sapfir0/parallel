@@ -141,6 +141,11 @@
   <ItemGroup>
     <ClCompile Include="parallel2.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="domain.h" />
+    <ClInclude Include="helper.h" />
+    <ClInclude Include="timeHelper.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
