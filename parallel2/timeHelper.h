@@ -1,3 +1,6 @@
+#ifndef TIME_HELPER_H
+#define TIME_HELPER_H
+
 #include <functional>
 #include <chrono>
 #include <iostream>
@@ -56,3 +59,5 @@ std::vector<std::vector<T>> splitVector(const std::vector<T>& vec, size_t n)
 
     return outVec;
 }
+
+#endif //TIME_HELPER_H 

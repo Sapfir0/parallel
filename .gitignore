@@ -4,7 +4,6 @@
 Debug
 .vs
 .vscode
-*.vcxproj*
 Release
 
 # Compiled Object files
