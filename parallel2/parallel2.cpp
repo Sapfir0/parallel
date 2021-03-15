@@ -12,58 +12,39 @@
 #include <unordered_map>
 #include <string>
 #include "domain.h"
+#include <functional>
 
 using namespace std;
 
 
 int main() {
-    int N = 1000000;
-    const int maxThreadsCount = 6;
+    int N = 100000;
+    int MaxN = 100000000;
+    const int maxThreadsCount = 8;
     vector<int> list0(randomVector(N));
 
     cout << "serial ";
     auto serial = measureTime(uniqueCounter<int>)(list0);
 
-    for (int threadsCount = 2; threadsCount < maxThreadsCount; threadsCount++) {
-        cout << "parallelMutex" << threadsCount << " ";
-        auto parallel = measureTime(uniqueCounterMutex<int>)(list0, threadsCount);
-        testIsEqualLength(serial, parallel);
+    map<string, function<int(vector<int>, int)>> types = {
+        {"parallelMutex", uniqueCounterMutex<int>},
+        {"shared variables", uniqueCounterSharedVariables<int>},
+        {"atomic", uniqueCounterAtomic<int>}
+    };
+    
 
-        cout << "shared variables" << threadsCount << " ";
-        auto shared = measureTime(uniqueCounterSharedVariables<int>)(list0, threadsCount);
-        testIsEqualLength(serial, shared);
-
-        cout << "atomic" << threadsCount << " ";
-        auto atom = measureTime(uniqueCounterAtomic<int>)(list0, threadsCount);
-        testIsEqualLength(serial, atom);
+    for (auto type : types) {
+        for (int size = N; size < MaxN; size *= 10) {
+            for (int threadsCount = 2; threadsCount < maxThreadsCount; threadsCount++) {
+                cout << type.first << threadsCount << " ";
+                int result = 0;
+                double elapsed = 0;
+                cout << size << " ";
+                tie(result, elapsed) = checkTime(type.second, list0, threadsCount);
+                testIsEqualLength(serial, result);
+            }
+        }
     }
 
-
-   
-    /* serial 10.062 seconds
-parallelMutex1 8.59098 seconds
-atomic1 7.50061 seconds
-parallelMutex2 9.21549 seconds
-atomic2 7.46169 seconds
-parallelMutex3 10.7417 seconds
-atomic3 8.00863 seconds
-parallelMutex4 12.7107 seconds
-atomic4 9.49391 seconds
-parallelMutex5 12.9359 seconds
-atomic5 9.90633 seconds
-   vector<int> list = {1, -1, 1, 0, 9, 12, 3, -3, 0, 12, -12};
-    auto res = getOnlyUniqueElements(uniqueCounter(list));
-    for (auto elem : res)
-    {
-        std::cout << elem << endl;
-    }
-    vector<string> list2 = { "a", "b", "a", "c", "d", "e", "c" };
-    auto res2 = getOnlyUniqueElements(uniqueCounter(list2));
-    for (auto elem : res2)
-    {
-        std::cout << elem << endl;
-    }
-
-    */
     return 0;
 }

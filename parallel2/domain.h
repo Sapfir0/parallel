@@ -19,7 +19,7 @@ int getOnlyUniqueElements(unordered_map<T, int> dict) {
 }
 
 template <typename T>
-int uniqueCounter(vector<T> list) {
+int uniqueCounter(vector<int> list) {
     unordered_map<T, int> uniqueMap = {};
     for (T item : list) {
         uniqueMap[item] += 1;
@@ -110,22 +110,27 @@ int uniqueCounterSharedVariables(vector<T> list, int threadsCount) {
         }
     });
 
-    int counter = 0;
-    for (int i = 0; i < uniqueMaps.size(); i++) {
-        for (auto item : uniqueMaps[i]) {
+    unordered_map<int, int> syncMap; // threadNumber: counter
+    
+    parallelExec(threadsCount, [&](size_t block) {
+        for (auto item : uniqueMaps[block]) {
             if (item.second == 1) {
                 bool isUniqueElement = true;
                 for (int j = 0; j < uniqueMaps.size(); j++) {
-                    if (j != i && uniqueMaps[j].find(item.first) != uniqueMaps[j].end()) { // хотя бы в одной мапе находим
+                    if (j != block && uniqueMaps[j].find(item.first) != uniqueMaps[j].end()) { // хотя бы в одной мапе находим
                         isUniqueElement = false;
                     }
                 }
                 if (isUniqueElement) {
-                    counter++;
+                    syncMap[block] += 1;
                 }
             }
-
         }
+    });
+
+    int counter = 0;
+    for (auto item : syncMap) {
+        counter += item.second;
     }
 
     return counter;

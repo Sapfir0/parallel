@@ -22,7 +22,7 @@ public:
         R result = f_(args...);
         end = std::chrono::system_clock::now();
         elasped = end - start;
-        std::cout << elasped.count() << " seconds" << std::endl;
+        std::cout << elasped.count() << "" << std::endl;
 
         return result;
     }
@@ -36,6 +36,17 @@ ExeTime<R(Args ...)> measureTime(R(*f)(Args ...)) {
     return ExeTime<R(Args...)>(std::function<R(Args...)>(f));
 }
 
+tuple<int, double> checkTime(function<int(vector<int>, int)> func, vector<int> list, int threadsCount) {
+    std::chrono::time_point<std::chrono::system_clock> start, end;
+    std::chrono::duration<double> elapsed;
+
+    start = std::chrono::system_clock::now();
+    auto result = func(list, threadsCount);
+    end = std::chrono::system_clock::now();
+    elapsed = end - start;
+    std::cout << elapsed.count() << "" << std::endl;
+    return { result, elapsed.count() };
+}
 
 template<typename T>
 std::vector<std::vector<T>> splitVector(const std::vector<T>& vec, size_t n)
