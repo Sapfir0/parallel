@@ -18,9 +18,10 @@ using namespace std;
 
 
 int main() {
-    int N = 100000;
-    int MaxN = 10000000;
+    int N = 1000000;
+    int MaxN = 9000000;
     const int maxThreadsCount = 8;
+    int NStep = 1000000;
     //vector<int> list0(randomVector(N));
 
 
@@ -29,15 +30,25 @@ int main() {
         {"sharedVariables", uniqueCounterSharedVariables<int>},
         {"atomic", uniqueCounterAtomic<int>}
     };
-    
 
-    for (int size = N; size < MaxN; size *= 2) {
+    map<int, tuple<vector<int>, int> > dataList; // collectionSize: {randomList, serialResult}
+
+    for (int size = N; size < MaxN; size += NStep) {
         auto currentList = randomVector(size);
+
         cout << "serial 1 " << size << " ";
         auto serial = measureTime(uniqueCounter<int>)(currentList);
+        dataList[size] = { currentList, serial };
+    }
 
-        for (auto type : types) {
-            for (int threadsCount = 2; threadsCount < maxThreadsCount; threadsCount++) {
+
+    for (auto type : types) {
+        for (int threadsCount = 2; threadsCount < maxThreadsCount; threadsCount++) {
+            for (int size = N; size < MaxN; size += NStep) {
+                vector<int> currentList;
+                int serial = 0;
+                tie(currentList, serial) = dataList[size];
+
                 cout << type.first << " " << threadsCount << " ";
                 int result = 0;
                 double elapsed = 0;
