@@ -161,7 +161,7 @@ for row in rows:
     [name, threads, size, time] = row.split(" ")
     parsed.append({'name': name, 'threads': int(threads), 'size': int(size), 'time': float(time)})
 
-threads = set([i['threads'] for i in parsed if i['name'] == 'sharedVariables'])
+threads = set([i['threads'] for i in parsed if i['name'] == 'serial' or i['name'] == 'sharedVariables'])
 
 
 plotData = {}
@@ -169,14 +169,12 @@ for parallelType in ['serial', 'atomic', 'parallelMutex', 'sharedVariables']:
     for thread in threads:
         timings = [i['time'] for i in parsed if i['name'] == parallelType and i['threads']== thread]
         sizes = [i['size'] for i in parsed if i['name'] == parallelType and i['threads']== thread]
-        plotData.update({parallelType: {'size': sizes, 'time': timings}})
 
+        if len(sizes) != 0 and len(timings) != 0:
+            plt.plot(sizes, timings)
+            legend.append(f"{parallelType} {thread}")
+        # plotData.update({parallelType: {'size': sizes, 'time': timings}})
 
-for parallelType in plotData.keys():
-    d = plotData[parallelType]
-    plt.plot(d['size'], d['time'])
-    print(d['size'])
-    legend.append(f"{parallelType} ")
 
 
 plt.xlabel('size')
