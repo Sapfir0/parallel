@@ -112,6 +112,7 @@ int uniqueCounterSharedVariables(vector<T> list, int threadsCount) {
 
     unordered_map<int, int> syncMap; // threadNumber: counter
     
+    int counter = 0;
     parallelExec(threadsCount, [&](size_t block) {
         for (auto item : uniqueMaps[block]) {
             if (item.second == 1) {
@@ -122,16 +123,16 @@ int uniqueCounterSharedVariables(vector<T> list, int threadsCount) {
                     }
                 }
                 if (isUniqueElement) {
-                    syncMap[block] += 1;
+                    counter += 1;
                 }
             }
         }
     });
 
-    int counter = 0;
+ /*   int counter = 0;
     for (auto item : syncMap) {
         counter += item.second;
-    }
+    }*/
 
     return counter;
 }

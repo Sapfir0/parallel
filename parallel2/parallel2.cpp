@@ -19,7 +19,7 @@ using namespace std;
 
 int main() {
     int N = 1000000;
-    int MaxN = 9000000;
+    int MaxN = 3000000;
     const int maxThreadsCount = 8;
     int NStep = 1000000;
     //vector<int> list0(randomVector(N));
@@ -34,8 +34,8 @@ int main() {
     map<int, tuple<vector<int>, int> > dataList; // collectionSize: {randomList, serialResult}
 
     for (int size = N; size < MaxN; size += NStep) {
-        auto currentList = randomVector(size);
-
+        //auto currentList = randomVector(size);
+        auto currentList = { 1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,4 };
         cout << "serial 1 " << size << " ";
         auto serial = measureTime(uniqueCounter<int>)(currentList);
         dataList[size] = { currentList, serial };
