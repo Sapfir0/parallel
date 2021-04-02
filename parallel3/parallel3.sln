@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31025.194
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "parallel3", "parallel3\parallel3.vcxproj", "{88C31BB0-0306-4F0B-9B73-931723864154}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{88C31BB0-0306-4F0B-9B73-931723864154}.Debug|x64.ActiveCfg = Debug|x64
+		{88C31BB0-0306-4F0B-9B73-931723864154}.Debug|x64.Build.0 = Debug|x64
+		{88C31BB0-0306-4F0B-9B73-931723864154}.Debug|x86.ActiveCfg = Debug|Win32
+		{88C31BB0-0306-4F0B-9B73-931723864154}.Debug|x86.Build.0 = Debug|Win32
+		{88C31BB0-0306-4F0B-9B73-931723864154}.Release|x64.ActiveCfg = Release|x64
+		{88C31BB0-0306-4F0B-9B73-931723864154}.Release|x64.Build.0 = Release|x64
+		{88C31BB0-0306-4F0B-9B73-931723864154}.Release|x86.ActiveCfg = Release|Win32
+		{88C31BB0-0306-4F0B-9B73-931723864154}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A0DD9DD7-F6B6-435F-A09A-62AEB5E12193}
+	EndGlobalSection
+EndGlobal
