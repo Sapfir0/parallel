@@ -15,10 +15,10 @@ void testIsEqual(vector<int>  list1, vector<int>  list2) {
 int main()
 {
     int N = 10000;
-    int MaxN = 30000;
+    int MaxN = 60000;
     const int maxThreadsCount = 8;
     int NStep = 10000;
-
+    
     map<string, function<vector<int>(vector<int>, int)> > types = {
     {"parallel", sortParallel },
     };
@@ -32,7 +32,7 @@ int main()
         dataList[size] = serial;
     }
 
-    for (int threadsCount = 2; threadsCount < maxThreadsCount; threadsCount++) {
+    for (int threadsCount = 1; threadsCount < maxThreadsCount; threadsCount++) {
         for (int size = N; size < MaxN; size += NStep) {
             vector<int> currentList;
             double serial;
