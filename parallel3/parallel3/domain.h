@@ -14,7 +14,7 @@ vector<int> standartSortArray(vector<int> list) {
 }
 
 
-int partition(vector<int> arr, int low, int high) {
+int partition(int arr[], int low, int high) {
     int pivot = arr[high]; // pivot
     int i = (low - 1); // Index of smaller element and indicates the right position of pivot found so far
 
@@ -32,7 +32,7 @@ int partition(vector<int> arr, int low, int high) {
 }
 
 
-int partitionParallel(vector<int>  arr, int low, int high, int threadsCount) {
+int partitionParallel(int arr[], int low, int high, int threadsCount) {
     int pivot = arr[high]; // pivot
     int i = (low - 1); 
 
@@ -49,32 +49,30 @@ int partitionParallel(vector<int>  arr, int low, int high, int threadsCount) {
     return (i + 1);
 }
 
-vector<int> quickSortSerial(vector<int> arr, int low, int high) {
+void quickSortSerial(int arr[], int low, int high) {
     if (low < high) {
         int pi = partition(arr, low, high);
 
         quickSortSerial(arr, low, pi - 1);
         quickSortSerial(arr, pi + 1, high);
     }
-    return arr;
 }
 
-vector<int> quickSortParallel(vector<int> arr, int low, int high, int threadsCount) {
+void quickSortParallel(int arr[], int low, int high, int threadsCount) {
     if (low < high) {
         int pi = partitionParallel(arr, low, high, threadsCount);
 
         quickSortParallel(arr, low, pi - 1, threadsCount);
         quickSortParallel(arr, pi + 1, high, threadsCount);
     }
-    return arr;
 }
 
-vector<int> sortParallel(vector<int> arr, int threadCount) {
-    return quickSortParallel(arr, 0, arr.size() - 1, threadCount);
+void sortParallel(int arr[], int threadCount) {
+    quickSortParallel(arr, 0, sizeof(arr) / sizeof(arr[0]) - 1, threadCount);
 }
 
-vector<int> sortSerial(vector<int> arr) {
-    return quickSortSerial(arr, 0, arr.size() - 1);
+void sortSerial(int arr[]) {
+    quickSortSerial(arr, 0, sizeof(arr) / sizeof(arr[0]) - 1);
 }
 
 

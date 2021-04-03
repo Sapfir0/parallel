@@ -5,7 +5,7 @@
 #include <omp.h>
 #include <map>
 
-void testIsEqual(vector<int>  list1, vector<int>  list2) {
+void testIsEqual(int list1[], int list2[]) {
     if (list1 == list2) {
         return;
     }
@@ -19,31 +19,27 @@ int main()
     const int maxThreadsCount = 8;
     int NStep = 10000;
     
-    map<string, function<vector<int>(vector<int>, int)> > types = {
+    map<string, function<void(int[], int)> > types = {
     {"parallel", sortParallel },
     };
 
-    map<int, tuple<vector<int>, double > > dataList; // collectionSize: {randomList, serialResult}
+    map<int, int* > dataList; // collectionSize: {randomList, serialResult}
 
     for (int size = N; size < MaxN; size += NStep) {
         auto currentList = randomVector(size);
         cout << "serial 1 " << size << " ";
-        auto serial = checkSerialTime(sortSerial, currentList);
-        dataList[size] = serial;
+        checkSerialTime(sortSerial, currentList);
+        dataList[size] = currentList;
     }
 
     for (int threadsCount = 1; threadsCount < maxThreadsCount; threadsCount++) {
         for (int size = N; size < MaxN; size += NStep) {
-            vector<int> currentList;
-            double serial;
-            tie(currentList, serial) = dataList[size];
+            auto currentList  = dataList[size];
             cout << "Parallel" << " " << threadsCount << " ";
 
-            vector<int> result;
-            double elapsed = 0;
             cout << size << " ";
-            tie(result, elapsed) = checkParallelTime(sortParallel, currentList, threadsCount);
-            testIsEqual(currentList, result);
+            double elapsed = checkParallelTime(sortParallel, currentList, threadsCount);
+            testIsEqual(currentList, dataList[size]);
         }
     }
     
