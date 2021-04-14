@@ -14,7 +14,7 @@ vector<int> standartSortArray(vector<int> list) {
 }
 
 
-int partition(int arr[], int low, int high) {
+int partition(vector<int> arr, int low, int high) {
     int pivot = arr[high]; // pivot
     int i = (low - 1); // Index of smaller element and indicates the right position of pivot found so far
 
@@ -32,12 +32,10 @@ int partition(int arr[], int low, int high) {
 }
 
 
-int partitionParallel(int arr[], int low, int high, int threadsCount) {
+int partitionParallel(vector<int> arr, int low, int high, int threadsCount) {
     int pivot = arr[high]; // pivot
     int i = (low - 1); 
 
-    omp_set_num_threads(threadsCount);
-    #pragma omp parallel for
     for (int j = low; j <= high - 1; j++) {
         // If current element is smaller than the pivot
         if (arr[j] < pivot) {
@@ -49,7 +47,7 @@ int partitionParallel(int arr[], int low, int high, int threadsCount) {
     return (i + 1);
 }
 
-void quickSortSerial(int arr[], int low, int high) {
+void quickSortSerial(vector<int> arr, int low, int high) {
     if (low < high) {
         int pi = partition(arr, low, high);
 
@@ -58,20 +56,22 @@ void quickSortSerial(int arr[], int low, int high) {
     }
 }
 
-void quickSortParallel(int arr[], int low, int high, int threadsCount) {
+void quickSortParallel(vector<int> arr, int low, int high, int threadsCount) {
     if (low < high) {
         int pi = partitionParallel(arr, low, high, threadsCount);
+        omp_set_num_threads(threadsCount);
 
+        
         quickSortParallel(arr, low, pi - 1, threadsCount);
-        quickSortParallel(arr, pi + 1, high, threadsCount);
+        quickSortParallel(arr, pi + 1, high, threadsCount);       
     }
 }
 
-void sortParallel(int arr[], int threadCount) {
+void sortParallel(vector<int> arr, int threadCount) {
     quickSortParallel(arr, 0, sizeof(arr) / sizeof(arr[0]) - 1, threadCount);
 }
 
-void sortSerial(int arr[]) {
+void sortSerial(vector<int> arr) {
     quickSortSerial(arr, 0, sizeof(arr) / sizeof(arr[0]) - 1);
 }
 

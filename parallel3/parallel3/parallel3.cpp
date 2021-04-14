@@ -5,7 +5,7 @@
 #include <omp.h>
 #include <map>
 
-void testIsEqual(int list1[], int list2[]) {
+void testIsEqual(vector<int> list1, vector<int> list2) {
     if (list1 == list2) {
         return;
     }
@@ -19,11 +19,11 @@ int main()
     const int maxThreadsCount = 8;
     int NStep = 10000;
     
-    map<string, function<void(int[], int)> > types = {
+    map<string, function<void(vector<int>, int)> > types = {
     {"parallel", sortParallel },
     };
 
-    map<int, int* > dataList; // collectionSize: {randomList, serialResult}
+    map<int, vector<int> > dataList; // collectionSize: {randomList, serialResult}
 
     for (int size = N; size < MaxN; size += NStep) {
         auto currentList = randomVector(size);
