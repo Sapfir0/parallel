@@ -77,11 +77,17 @@ void quickSortParallel(vector<int> arr, int low, int high, int threadsCount) {
     }
 }
 
-void sortParallel(vector<int> arr, int threadCount) {
-    quickSortParallel(arr, 0, arr.size() - 1, threadCount);
+void sortParallel(vector<int> &arr, int threadCount) {
+    #pragma omp parallel
+    {
+        #pragma omp single
+        {
+            quickSortParallel(arr, 0, arr.size() - 1, threadCount);
+        }
+    }
 }
 
-void sortSerial(vector<int> arr) {
+void sortSerial(vector<int> &arr) {
     quickSortSerial(arr, 0, arr.size()-1);
 }
 

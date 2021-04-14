@@ -20,7 +20,7 @@ vector<int> randomVector(size_t size) {
 }
 
 
-double checkSerialTime(function<void(vector<int>)> func, vector<int> list) {
+double checkSerialTime(function<void(vector<int>&)> func, vector<int> list) {
     std::chrono::time_point<std::chrono::system_clock> start, end;
     std::chrono::duration<double> elapsed;
 
@@ -32,7 +32,7 @@ double checkSerialTime(function<void(vector<int>)> func, vector<int> list) {
     return elapsed.count();
 }
 
-double checkParallelTime(function<void(vector<int>, int)> func, vector<int> list, int threadsCount) {
+double checkParallelTime(function<void(vector<int>&, int)> func, vector<int> list, int threadsCount) {
     std::chrono::time_point<std::chrono::system_clock> start, end;
     std::chrono::duration<double> elapsed;
 

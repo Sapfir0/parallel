@@ -19,7 +19,7 @@ int main()
     const int maxThreadsCount = 8;
     int NStep = 10000;
     
-    map<string, function<void(vector<int>, int)> > types = {
+    map<string, function<void(vector<int>&, int)> > types = {
     {"parallel", sortParallel },
     };
 
