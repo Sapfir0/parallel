@@ -33,11 +33,11 @@ int partition(vector<int> arr, int low, int high) {
 
 
 int partitionParallel(vector<int> arr, int low, int high, int threadsCount) {
-    int pivot = arr[high]; // pivot
+    int pivot = arr[high]; 
     int i = (low - 1); 
 
     for (int j = low; j <= high - 1; j++) {
-        // If current element is smaller than the pivot
+
         if (arr[j] < pivot) {
             i++;
             std::swap(arr[i], arr[j]);
@@ -53,6 +53,7 @@ void quickSortSerial(vector<int> arr, int low, int high) {
 
         quickSortSerial(arr, low, pi - 1);
         quickSortSerial(arr, pi + 1, high);
+   
     }
 }
 
@@ -61,18 +62,27 @@ void quickSortParallel(vector<int> arr, int low, int high, int threadsCount) {
         int pi = partitionParallel(arr, low, high, threadsCount);
         omp_set_num_threads(threadsCount);
 
-        
-        quickSortParallel(arr, low, pi - 1, threadsCount);
-        quickSortParallel(arr, pi + 1, high, threadsCount);       
+        #pragma omp task 
+        {
+            quickSortParallel(arr, low, pi - 1, threadsCount);
+        }
+
+        #pragma omp task 
+        {
+            quickSortParallel(arr, pi + 1, high, threadsCount);
+        }
+        #pragma omp taskwait
+    
+       
     }
 }
 
 void sortParallel(vector<int> arr, int threadCount) {
-    quickSortParallel(arr, 0, sizeof(arr) / sizeof(arr[0]) - 1, threadCount);
+    quickSortParallel(arr, 0, arr.size() - 1, threadCount);
 }
 
 void sortSerial(vector<int> arr) {
-    quickSortSerial(arr, 0, sizeof(arr) / sizeof(arr[0]) - 1);
+    quickSortSerial(arr, 0, arr.size()-1);
 }
 
 
