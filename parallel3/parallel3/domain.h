@@ -69,9 +69,7 @@ void quickSortParallel(vector<int> &arr, int low, int high, int threadsCount) {
         #pragma omp task 
         {
             quickSortParallel(arr, pi + 1, high, threadsCount);
-        }
-        #pragma omp taskwait
-    
+        }    
        
     }
 }
@@ -82,6 +80,8 @@ void sortParallel(vector<int> &arr, int threadCount) {
         #pragma omp single
         {
             quickSortParallel(arr, 0, arr.size() - 1, threadCount);
+            #pragma omp taskwait
+
         }
     }
 }
