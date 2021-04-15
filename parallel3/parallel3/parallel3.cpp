@@ -14,10 +14,10 @@ void testIsEqual(vector<int> list1, vector<int> list2) {
 
 int main()
 {
-    int N = 10000;
-    int MaxN = 60000;
+    int N = 1000000;
+    int MaxN = 6000000;
     const int maxThreadsCount = 8;
-    int NStep = 10000;
+    int NStep = 1000000;
     
     map<string, function<void(vector<int>&, int)> > types = {
     {"parallel", sortParallel },
@@ -33,6 +33,8 @@ int main()
     }
 
     for (int threadsCount = 1; threadsCount < maxThreadsCount; threadsCount++) {
+        omp_set_num_threads(threadsCount);
+
         for (int size = N; size < MaxN; size += NStep) {
             auto currentList  = dataList[size];
             cout << "Parallel" << " " << threadsCount << " ";
