@@ -5,7 +5,7 @@
 #include <omp.h>
 #include <map>
 
-void testIsEqual(vector<int> list1, vector<int> list2) {
+void testIsEqual(vector<int>& list1, vector<int>& list2) {
     if (list1 == list2) {
         return;
     }
@@ -14,13 +14,13 @@ void testIsEqual(vector<int> list1, vector<int> list2) {
 
 int main()
 {
-    int N = 1000000;
-    int MaxN = 6000000;
-    const int maxThreadsCount = 8;
-    int NStep = 1000000;
-    
+    int N = 10000000;
+    int MaxN = 20000000;
+    const int maxThreadsCount = 13;
+    int NStep = 20000000;
+
     map<string, function<void(vector<int>&, int)> > types = {
-    {"parallel", sortParallel },
+            {"parallel", sortParallel },
     };
 
     map<int, vector<int> > dataList; // collectionSize: {randomList, serialResult}
@@ -36,7 +36,7 @@ int main()
         omp_set_num_threads(threadsCount);
 
         for (int size = N; size < MaxN; size += NStep) {
-            auto currentList  = dataList[size];
+            auto currentList = dataList[size];
             cout << "Parallel" << " " << threadsCount << " ";
 
             cout << size << " ";
@@ -44,7 +44,6 @@ int main()
             testIsEqual(currentList, dataList[size]);
         }
     }
-    
 
 
 }
