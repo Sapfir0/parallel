@@ -28,14 +28,15 @@ int main() {
     map<string, function<int(vector<int>, int)>> types = {
         {"parallelMutex", uniqueCounterMutex<int>},
         {"sharedVariables", uniqueCounterSharedVariables<int>},
-        {"atomic", uniqueCounterAtomic<int>}
+        {"atomic", uniqueCounterAtomic<int>},
+        {"sharedRace", uniqueCounterSharedVariablesRace<int>}
     };
 
     map<int, tuple<vector<int>, int> > dataList; // collectionSize: {randomList, serialResult}
 
     for (int size = N; size < MaxN; size += NStep) {
-        //auto currentList = randomVector(size);
-        auto currentList = { 1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,4 };
+        auto currentList = randomVector(size);
+        //auto currentList = { 1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,4 };
         cout << "serial 1 " << size << " ";
         auto serial = measureTime(uniqueCounter<int>)(currentList);
         dataList[size] = { currentList, serial };
@@ -43,7 +44,7 @@ int main() {
 
 
     for (auto type : types) {
-        for (int threadsCount = 2; threadsCount < maxThreadsCount; threadsCount++) {
+        for (int threadsCount = 1; threadsCount < maxThreadsCount; threadsCount++) {
             for (int size = N; size < MaxN; size += NStep) {
                 vector<int> currentList;
                 int serial = 0;

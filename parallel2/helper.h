@@ -8,6 +8,7 @@
 #include <random>
 #include <algorithm>
 #include <mutex>
+#include <string>
 
 using namespace std;
 

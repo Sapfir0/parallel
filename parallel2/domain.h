@@ -8,7 +8,7 @@
 using namespace std;
 
 template <typename T>
-int getOnlyUniqueElements(unordered_map<T, int> dict) {
+int getOnlyUniqueElements(unordered_map<T, int> &dict) {
     int counter = 0;
     for (auto item : dict) {
         if (item.second == 1) {
@@ -50,6 +50,7 @@ int uniqueCounterMutex(vector<T> list, int threadsCount) {
                     if (j != block && uniqueMaps[j].find(item.first) != uniqueMaps[j].end()) { // хотя бы в одной мапе находим
                         std::lock_guard<std::mutex> guard(myMutex);
                         isUniqueElement = false;
+                        break;
                     }
                 }
                 if (isUniqueElement) {
@@ -84,6 +85,7 @@ int uniqueCounterAtomic(vector<T> list, int threadsCount) {
                 for (int j = 0; j < uniqueMaps.size(); j++) {
                     if (j != block && uniqueMaps[j].find(item.first) != uniqueMaps[j].end()) { // хотя бы в одной мапе находим
                         isUniqueElement = false;
+                        break;
                     }
                 }
                 if (isUniqueElement) {
@@ -112,6 +114,43 @@ int uniqueCounterSharedVariables(vector<T> list, int threadsCount) {
 
     unordered_map<int, int> syncMap; // threadNumber: counter
     
+    parallelExec(threadsCount, [&](size_t block) {
+        for (auto item : uniqueMaps[block]) {
+            if (item.second == 1) {
+                bool isUniqueElement = true;
+                for (int j = 0; j < uniqueMaps.size(); j++) {
+                    if (j != block && uniqueMaps[j].find(item.first) != uniqueMaps[j].end()) { // хотя бы в одной мапе находим
+                        isUniqueElement = false;
+                    }
+                }
+                if (isUniqueElement) {
+                    syncMap[block]++;
+                }
+            }
+        }
+    });
+
+    int counter = 0;
+    for (auto item : syncMap) {
+        counter += item.second;
+    }
+
+    return counter;
+}
+
+template <typename T>
+int uniqueCounterSharedVariablesRace(vector<T> list, int threadsCount) {
+    vector<unordered_map<T, int>> uniqueMaps(threadsCount);
+    auto vectors = splitVector(list, threadsCount);
+
+    parallelExec(threadsCount, [&](size_t block) {
+        for (T item : vectors[block]) {
+            uniqueMaps[block][item] += 1;
+        }
+        });
+
+    unordered_map<int, int> syncMap; // threadNumber: counter
+
     int counter = 0;
     parallelExec(threadsCount, [&](size_t block) {
         for (auto item : uniqueMaps[block]) {
@@ -127,12 +166,7 @@ int uniqueCounterSharedVariables(vector<T> list, int threadsCount) {
                 }
             }
         }
-    });
-
- /*   int counter = 0;
-    for (auto item : syncMap) {
-        counter += item.second;
-    }*/
+        });
 
     return counter;
 }
